@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+  <html>
+  <head>
+  
+  <meta name="viewport" content="initial-scale=1.0, width=device-width"/>
+  <script
+src="https://code.jquery.com/jquery-3.4.1.min.js"
+  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+  crossorigin="anonymous"></script>
+  <script src="https://js.api.here.com/v3/3.1/mapsjs-core.js"
+     type="text/javascript" charset="utf-8"></script>
+     <link rel="stylesheet" type="text/css" href="https://js.api.here.com/v3/3.1/mapsjs-ui.css" />
+  <script src="https://js.api.here.com/v3/3.1/mapsjs-service.js"
+     type="text/javascript" charset="utf-8"></script>
+  <script src="https://js.api.here.com/v3/3.1/mapsjs-clustering.js"
+     type="text/javascript" charset="utf-8"></script>
+     <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-ui.js"></script>
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js"></script>
+    <script type="module" src="index.js"></script>
+  </head>
+  <body>
+    <script>
+        function InitializeMap(){
+            
+            function addInfoBubble(map) {
+  var group = new H.map.Group();
+
+  map.addObject(group);
+
+  // add 'tap' event listener, that opens info bubble, to the group
+  group.addEventListener('tap', function (evt) {
+    // event target is the marker itself, group is a parent event target
+    // for all objects that it contains
+    var bubble = new H.ui.InfoBubble(evt.target.getGeometry(), {
+      // read custom data
+      content: evt.target.getData()
+    });
+    // show info bubble
+    ui.addBubble(bubble);
+  }, false);
+  addMarkerToGroup(group, {lat: 13.8776, lng: 121.0213},
+    '<div><a href="https://www.mcfc.co.uk">Manchester City</a></div>' +
+    '<div>City of Manchester Stadium<br />Capacity: 55,097</div>');
+  
+}
+        var platform = new H.service.Platform({
+            'apikey': '3xuR2ww6q3agxQJw6p3pL-R-BWRPprvdJGOroOagUYM'
+          });
+        
+          var maptypes = platform.createDefaultLayers();
+          var map = new H.Map(
+            document.getElementById('mapContainer'),
+            maptypes.vector.normal.map,
+            {
+              center: {lat: 13.8704326, lng: 121.0070292},
+              zoom: 13.84,
+              pixelRatio: window.devicePixelRatio || 1
+            });
+    
+            window.addEventListener('resize', () => map.getViewPort().resize());
+            var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
+            var ui = H.ui.UI.createDefault(map, maptypes);
+            var dataPoints = [];
+dataPoints.push(new H.clustering.DataPoint(13.8776, 121.0213));
+dataPoints.push(new H.clustering.DataPoint(13.8777, 121.0214));
+dataPoints.push(new H.clustering.DataPoint(13.868, 120.9966));
+function addMarkerToGroup(group, coordinate, html) {
+  var marker = new H.clustering.Provider(coordinate);
+  // add custom data to the marker
+  marker.setData(html);
+  group.addObject(marker);
+}
+var clusteredDataProvider = new H.clustering.Provider(dataPoints);
+var layer = new H.map.layer.ObjectLayer(clusteredDataProvider);
+
+clusteredDataProvider.addEventListener('tap', function (evt){
+    var bubble = new H.ui.InfoBubble(evt.target.getGeometry(), {
+      // read custom data
+      content: evt.target.getData()
+    });
+    ui.addBubble(bubble);
+  }, false);
+
+// Add the layer to the map:
+map.addLayer(layer);
+addInfoBubble(map);
+            
+    }
+    
+      document.addEventListener('DOMContentLoaded', function() {
+      console.log('DOM is ready');
+      InitializeMap();
+    });
+
+    
+      </script>
+      <div style="width: 640px; height: 480px" id="mapContainer"></div>
+  </body>
+  </html>

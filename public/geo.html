@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-core.js"
+    type="text/javascript" charset="utf-8"></script>
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-service.js"
+    
+    type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-ui.js"></script>
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js"></script>
+    <!--<script src="dist/bundle.js"></script>-->
+    <!--<script type="text/javascript" src="db.js"></script>-->
+  </head>
+  <body>
+    <style type="text/css">
+      .log {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        height: 150px;
+        width: 250px;
+        overflow: scroll;
+        background: white;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        font-size: 12px;
+      }
+      .log-entry {
+        padding: 5px;
+        border-bottom: 1px solid #d0d9e9;
+      }
+      .log-entry:nth-child(odd) {
+          background-color: #e1e7f1;
+      }
+    </style>
+    <button type="button" onclick="insD();" value="button">Insert</button>
+    <div style="width: 640px; height: 480px" id="mapContainer"></div>
+    <script>
+      function insD(){
+    writeUserData(2,'test','342432','4343');
+  }
+      function setUpClickListener(map) {
+    // Attach an event listener to map display
+    // obtain the coordinates and display in an alert box.
+    map.addEventListener('tap', function (evt) {
+      var coord = map.screenToGeo(evt.currentPointer.viewportX,
+              evt.currentPointer.viewportY);
+      logEvent('Clicked at ' + Math.abs(coord.lat.toFixed(4)) +
+          ((coord.lat > 0) ? 'N' : 'S') +
+          ' ' + Math.abs(coord.lng.toFixed(4)) +
+           ((coord.lng > 0) ? 'E' : 'W'));
+    });
+  }
+      // Initialize the platform object
+      var platform = new H.service.Platform({
+        'apikey': '3xuR2ww6q3agxQJw6p3pL-R-BWRPprvdJGOroOagUYM'
+      });
+
+      // Obtain the default map types from the platform object
+      var maptypes = platform.createDefaultLayers();
+
+      // Instantiate (and display) the map
+      var map = new H.Map(
+        document.getElementById('mapContainer'),
+        maptypes.vector.normal.map,
+        {
+          center: {lat: 13.8704326, lng: 121.0070292},
+          zoom: 13.84,
+          pixelRatio: window.devicePixelRatio || 1
+        });
+        
+
+        window.addEventListener('resize', () => map.getViewPort().resize());
+        var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
+
+        var logContainer = document.createElement('ul');
+  logContainer.className ='log';
+  logContainer.innerHTML = '<li class="log-entry">Try clicking on the map</li>';
+  map.getElement().appendChild(logContainer);
+  
+  // Helper for logging events
+  function logEvent(str) {
+    var entry = document.createElement('li');
+    entry.className = 'log-entry';
+    entry.textContent = str;
+    logContainer.insertBefore(entry, logContainer.firstChild);
+  }
+
+
+  function writeUserData(userId, name, x, y) {
+  firebase.database().ref('records/' + userId).set({
+    id: userId,
+    name: name,
+    x_coor: x,
+    y_coor : y
+  });
+
+
+  setUpClickListener(map);
+
+  
+
+  
+}
+    </script>
+    
+  </body>
+</html>

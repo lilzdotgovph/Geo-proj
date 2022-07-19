@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-core.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-service.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-ui.js"></script>
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://js.api.here.com/v3/3.1/mapsjs-ui.css" />
+    <script type="module" src="index.js"></script>
+    </head>
+<body>
+  <script>
+    function InitializeMap(){
+    var platform = new H.service.Platform({
+        'apikey': '3xuR2ww6q3agxQJw6p3pL-R-BWRPprvdJGOroOagUYM'
+      });
+    
+      var maptypes = platform.createDefaultLayers();
+      var map = new H.Map(
+        document.getElementById('mapContainer'),
+        maptypes.vector.normal.map,
+        {
+          center: {lat: 13.8704326, lng: 121.0070292},
+          zoom: 13.84,
+          pixelRatio: window.devicePixelRatio || 1
+        });
+
+        function setUpClickListener(map) {
+          map.addEventListener('tap', function (evt) {
+          var marker;
+          map.removeObjects(map.getObjects());
+          var coord = map.screenToGeo(evt.currentPointer.viewportX,
+              evt.currentPointer.viewportY);
+          var la = Math.abs(coord.lat.toFixed(4));
+          var lo = Math.abs(coord.lng.toFixed(4));
+          //alert(la+' - '+lo);
+          marker = new H.map.Marker({lat:la,lng:lo});
+          map.addObject(marker);
+          //map.removeObject(marker);
+          document.getElementById("coor_lat").value = la;
+          document.getElementById("coor_long").value = lo;
+    });
+  }
+
+        window.addEventListener('resize', () => map.getViewPort().resize());
+        var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
+        var ui = H.ui.UI.createDefault(map, maptypes);
+
+        setUpClickListener(map);
+}
+  document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM is ready');
+  InitializeMap();
+});
+  </script>
+<h1>Enter your property:</h1>
+<div style="width: 640px; height: 480px" id="mapContainer"></div><br>
+<label>ID: </label> <input type="text" id="client_id" value="">
+<label>Name: </label> <input type="text" id="client_name" value="">
+<input type="hidden" id="coor_lat" value="">
+<input type="hidden" id="coor_long" value=""><br><br><hr>
+<button id="ins" type="button">Insert</button>
+<a href="viewmap.html" target="_blank">View Map</a>
+</body>
+</html>
